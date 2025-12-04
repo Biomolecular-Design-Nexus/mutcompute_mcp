@@ -79,4 +79,7 @@ Please convert the relative path to absolution path before calling the MCP serve
 
 ### 2. Estimate MutCompute likelihoods
 ```markdown
+Can you estimate the MutCompute likelihoods for data @examples/case2.1_subtilisin/data.pdb with precalculated probability matrix @examples/case2.1_subtilisin/wt_struct_mutcompute.csv using the mutcompute mcp server.
+
+Please convert the relative path to absolution path before calling the MCP servers. 
 ```
