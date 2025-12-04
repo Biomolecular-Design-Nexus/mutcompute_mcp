@@ -6,52 +6,73 @@ MutCompute MCP server for protein modeling.
 This MutCompute MCP server support two tools: 1. Mutation recommendations for each site; 2. Likelihood calculation given variants.
 
 ## Installation
-
+### Create MCP environment
 ```bash
 # Create and activate virtual environment
 mamba env create -p ./env python=3.10 pip -y
 mamba activate ./env
-pip install -r requirements.txt 
-pip install loguru sniffio biopython scipy numpy requests
+pip install loguru sniffio pandas numpy tqdm scipy
 
 pip install --ignore-installed fastmcp
 ```
-Download the model parameters from aws.
-```shell
-# Install aws if not installed.
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-unzip awscliv2.zip
-sudo ./aws/install
+### Create MutCompute environment
+```bash
+mamba env create -f repo/mutcompute/environment.yaml -p ./env_py36 -y
+mamba activate ./env_py36
+mamba install -c conda-forge cudnn -y
 
-# Download mokdels
-cd repo/MutCompute/models
-./download_models.sh
+# build box builder
+cd repo/mutcompute/src/box_builder
+python3 setup.py build_ext --inplace
+
+# Install free sasa
+wget https://freesasa.github.io/freesasa-2.1.2.zip
+unzip freesasa-2.1.2.zip
+cd freesasa-2.1.2
+./configure  --disable-json --disable-xml
+sudo apt install libc++-dev clang libjson-c-dev
+mamba install -c conda-forge libcxx -y
+export LD_LIBRARY_PATH=/usr/lib/llvm-14/lib/:$LD_LIBRARY_PATH
+export PATH=/usr/lib/llvm-14/lib/:$PATH
+sed -i 's/-lc++/-lstdc++/g' src/Makefile
+CC=/usr/bin/gcc CXX=/usr/bin/g++ ./configure --prefix=/usr/local
+make
+sudo make install
 ```
-
 ## Local usage
-### 1. Calculate Mutation Probability Matrix
+### Run MutCompute to obtain the mutational probability file given a PDB file
 ```shell
-python scripts/run_spired.py --fasta examples/test.fasta --output examples/spired --repo repo/MutCompute
+# Activate the main environment
+mamba activate ./env
+python scripts/run_mutcompute.py -p example/wt_struct.pdb
 ```
 
-### 2. Estimate MutCompute likelihoods
+The script will:
+1. Use the main `env` environment to call MutCompute
+2. Execute MutCompute in the `env_py36` environment via subprocess
+3. Generate PQR and SASA files automatically
+4. Run ensemble inference with 3 model weights
+5. Save predictions to CSV (default: `{pdb_name}_mutcompute.csv`)
+6. Clean up temporary files automatically
+7. Display detailed logs using loguru
+
+### Calculate the MutCompute likelihood based on the mutational probabilities
 ```shell
-python scripts/run_spired_fitness.py --fasta examples/test.fasta --output examples/spired --repo repo/MutCompute
+python scripts/mutcompute_llh.py -i example/data.csv -m example/wt_struct_mutcompute.csv --seq_col seq
 ```
 
 ## MCP usage
 
 ### Install MCP Server
 ```shell
-fastmcp install claude-code mcp-servers/MutCompute_mcp/src/MutCompute_mcp.py --python mcp-servers/MutCompute_mcp/env/bin/python
-fastmcp install gemini-cli mcp-servers/MutCompute_mcp/src/MutCompute_mcp.py --python mcp-servers/MutCompute_mcp/env/bin/python
+fastmcp install claude-code mcp-servers/mutcompute_mcp/src/mutcompute_mcp.py --python mcp-servers/mutcompute_mcp/env/bin/python
+fastmcp install gemini-cli mcp-servers/mutcompute_mcp/src/mutcompute_mcp.py --python mcp-servers/mutcompute_mcp/env/bin/python
 ```
 
 ### Call MCP service
 ### 1. Calculate Mutation Probability Matrix
 ```markdown
-Can you help train a ProtTrans model for data @examples/case2.1_subtilisin/ and save it to 
-@examples/case2.1_subtilisin/prot-t5_fitness using the ProtTrans mcp server with ProtT5-XL model.
+Can you help run MutCompute data @examples/case2.1_subtilisin/wt_struct.pdb using the mutcompute server.
 
 Please convert the relative path to absolution path before calling the MCP servers. 
 ```
