@@ -17,3 +17,6 @@ templates/
 tests/
 .gemini/
 repo/
+env_py36/
+jobs/
+logs/

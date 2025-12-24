@@ -1,0 +1,19 @@
+{
+  "_description": "Configuration for protein mutation prediction",
+  "_source": "Extracted from examples/use_case_1_protein_mutation_prediction.py",
+
+  "computation": {
+    "use_cpu": false,
+    "theano_flags_cpu": "device=cpu,floatX=float32",
+    "theano_flags_gpu": "device=cuda,floatX=float32"
+  },
+
+  "output": {
+    "suffix": "_mutcompute.csv",
+    "include_metadata": true
+  },
+
+  "paths": {
+    "repo_dir": "repo/mutcompute"
+  }
+}

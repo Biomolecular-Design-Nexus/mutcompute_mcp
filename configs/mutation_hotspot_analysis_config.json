@@ -1,0 +1,22 @@
+{
+  "_description": "Configuration for mutation hotspot analysis",
+  "_source": "Extracted from examples/use_case_3_mutation_hotspot_analysis.py",
+
+  "analysis": {
+    "percentile_threshold": 10,
+    "amino_acids": ["ALA", "ARG", "ASN", "ASP", "CYS", "GLN", "GLU", "GLY", "HIS", "ILE",
+                   "LEU", "LYS", "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL"]
+  },
+
+  "visualization": {
+    "plot_dpi": 300,
+    "plot_format": "png",
+    "figure_size": [10, 6]
+  },
+
+  "hotspot_criteria": {
+    "min_hotspot_score": 2,
+    "conservation_percentile": 90,
+    "entropy_percentile": 10
+  }
+}
