@@ -53,14 +53,26 @@ The MutCompute MCP server provides both synchronous and asynchronous APIs for pr
 
 ## Installation
 
+### Quick Setup (Recommended)
+
+Run the automated setup script:
+
+```bash
+cd mutcompute_mcp
+bash quick_setup.sh
+```
+
+The script will create both the main MCP environment and the legacy Python 3.6 environment for neural networks, install all dependencies, and display the Claude Code configuration. See `quick_setup.sh --help` for options like `--skip-env` or `--skip-repo`.
+
 ### Prerequisites
 - Conda or Mamba (mamba recommended for faster installation)
 - Python 3.10+ for MCP server
 - Python 3.6.12 for neural network compatibility
 - CUDA-compatible GPU (optional, CPU mode available)
 
-### Create Environment
-The environments are already set up in this installation. To recreate them:
+### Manual Installation (Alternative)
+
+If you prefer manual installation or need to customize the setup:
 
 ```bash
 # Navigate to the MCP directory
