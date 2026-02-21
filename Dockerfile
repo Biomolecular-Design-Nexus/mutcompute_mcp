@@ -108,6 +108,7 @@ RUN /opt/env/bin/pip install --no-cache-dir --ignore-installed fastmcp
 
 # Copy MCP server source code
 COPY src/ ./src/
+RUN chmod -R a+r /app/src/
 
 # Create working directories
 RUN mkdir -p tmp/inputs tmp/outputs logs
